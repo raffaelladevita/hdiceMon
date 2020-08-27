@@ -20,7 +20,7 @@ public class HELmonitor extends DetectorMonitor {
     public HELmonitor(String name) {
         super(name);
         this.setDetectorTabNames("Raw Signals", "Helicity");
-        this.init(false);
+        this.initPanel(false);
     }
 
     

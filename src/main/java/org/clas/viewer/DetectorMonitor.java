@@ -49,7 +49,7 @@ public class DetectorMonitor implements IDataEventListener {
     private int                    numberOfEvents;
     private Boolean                     detectorLogZ = true;
     private Boolean                     detectorLogY = false;
-    private Boolean                             isTB = false;
+    private String                           workDir = null;
     
     public IndexedList<List<Float>>         ttdcs = new IndexedList<List<Float>>(4);
     public IndexedList<List<Float>>         fadcs = new IndexedList<List<Float>>(4);
@@ -169,6 +169,10 @@ public class DetectorMonitor implements IDataEventListener {
     public int getNumberOfEvents() {
         return numberOfEvents;
     }
+
+    public String getWorkDir() {
+        return workDir;
+    }
     
     public void setLogZ(boolean flag) {
 	    this.detectorLogZ = flag;
@@ -186,7 +190,7 @@ public class DetectorMonitor implements IDataEventListener {
 	    return this.detectorLogY;
     }   
 
-    public void init(boolean flagDetectorView) {
+    public void initPanel(boolean flagDetectorView) {
         // initialize monitoring application
         // detector view is shown if flag is true
         getDetectorPanel().setLayout(new BorderLayout());
@@ -200,6 +204,10 @@ public class DetectorMonitor implements IDataEventListener {
         else {
             getDetectorPanel().add(getDetectorCanvas(),BorderLayout.CENTER); 
         }
+    }
+    
+    public void initHistos(String workdir)  {
+        setWorkDir(workdir);
         createHistos();
         plotHistos(); 
     }
@@ -238,7 +246,7 @@ public class DetectorMonitor implements IDataEventListener {
         this.createHistos();
         this.plotHistos();
     }
-    
+
     public void setCanvasUpdate(int time) {
         for(int tab=0; tab<this.detectorTabNames.size(); tab++) {
             this.detectorCanvas.getCanvas(this.detectorTabNames.get(tab)).initTimer(time);
@@ -265,6 +273,10 @@ public class DetectorMonitor implements IDataEventListener {
         this.numberOfEvents = numberOfEvents;
     }
 
+    public void setWorkDir(String workDir) {
+        this.workDir = workDir;
+    }
+    
     @Override
     public void timerUpdate() {
         

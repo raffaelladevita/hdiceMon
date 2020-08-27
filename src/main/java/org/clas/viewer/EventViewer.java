@@ -5,8 +5,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -61,7 +58,6 @@ import org.jlab.elog.LogEntry;
         
 /**
  *
- * @author ziegler
  * @author devita
  */
 
@@ -76,7 +72,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
     EmbeddedCanvasTabbed CLAS12Canvas       = null;
     private SchemaFactory     schemaFactory = new SchemaFactory();
     
-    CLASDecoder4                clasDecoder = new CLASDecoder4(true); 
+    CLASDecoder4                clasDecoder = null; 
            
     private int canvasUpdateTime   = 2000;
     private int analysisUpdateTime = 1000;
@@ -87,20 +83,46 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
     public String workDir = null; 
     
     // detector monitors
-    DetectorMonitor[] monitors = {
-        
+    DetectorMonitor[] monitors = {        
                 new HDICEmonitor("HDICE"),
                 new HELmonitor("HEL")
     };
+    
         
     public EventViewer() {    
-    	
-    	 String dir = ClasUtilsFile.getResourceDir("CLAS12DIR", "etc/bankdefs/hipo4");
-         schemaFactory.initFromDirectory(dir);
-         
-         this.workDir = ClasUtilsFile.getResourceDir("HDICEDIR", "/");
-        		
-	// create menu bar
+        
+    	String dir = ClasUtilsFile.getResourceDir("CLAS12DIR", "etc/bankdefs/hipo4");
+        schemaFactory.initFromDirectory(dir);
+        System.out.println("Bank schema read from " + dir);
+        clasDecoder = new CLASDecoder4(true);
+
+        workDir = ClasUtilsFile.getResourceDir("HDICEDIR", "/");
+        File wd = new File(workDir);
+        if (!wd.exists() || !wd.isDirectory()) {
+            System.out.println("Work directory " + workDir + " set incorrectly, exiting");
+            System.exit(1);
+        }
+        else {
+            System.out.println("Work directory set to " + workDir);
+            String outDir = workDir + "/output";
+            File wo = new File(outDir);
+            if (!wo.exists()) {
+                System.out.println("Creating histogram output directory " + outDir);
+                boolean result = false;
+                try{
+                    wo.mkdir();
+                    System.out.println("Histogram output directory created");  
+                } 
+                catch(SecurityException se){
+                    System.out.println("Error creating histogram output directory, exiting");
+                    System.exit(1);
+                }
+            }
+        
+        }
+        
+        
+        // create menu bar
         menuBar = new JMenuBar();
         JMenuItem menuItem;
         JMenu file = new JMenu("File");
@@ -213,6 +235,7 @@ public class EventViewer implements IDataEventListener, DetectorListener, Action
 //        tabbedpane.addChangeListener(this);
         
         for(int k =0; k<this.monitors.length; k++) {
+            this.monitors[k].initHistos(workDir);
             this.tabbedpane.add(this.monitors[k].getDetectorPanel(), this.monitors[k].getDetectorName());
             this.monitors[k].getDetectorView().getView().addDetectorListener(this);                        
         }

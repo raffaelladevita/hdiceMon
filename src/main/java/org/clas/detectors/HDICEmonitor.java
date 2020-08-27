@@ -2,19 +2,12 @@ package org.clas.detectors;
 
 import java.io.File;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.clas.viewer.DetectorMonitor;
-import org.jlab.elog.LogEntry;
-import org.jlab.elog.exception.AttachmentSizeException;
-import org.jlab.elog.exception.LogIOException;
-import org.jlab.elog.exception.LogRuntimeException;
 import org.jlab.groot.data.H1F;
 import org.jlab.groot.data.H2F;
 import org.jlab.groot.group.DataGroup;
 import org.jlab.io.base.DataBank;
 import org.jlab.io.base.DataEvent;
-import org.jlab.utils.system.ClasUtilsFile;
 
 /**
  *
@@ -28,7 +21,7 @@ public class HDICEmonitor extends DetectorMonitor {
     public HDICEmonitor(String name) {
         super(name);
         this.setDetectorTabNames("1Dhisto","2Dhisto");
-        this.init(false);
+        this.initPanel(false);
     }
 
     
@@ -69,12 +62,12 @@ public class HDICEmonitor extends DetectorMonitor {
         this.getDataGroup().add(dg2D, 1,0,0);
         
         Scanner input = null;
+        String gainFile = this.getWorkDir() +"/Gain_FADC.dat";            
         try {
-            String gainDir = ClasUtilsFile.getResourceDir("HDICEDIR", "/");
-            input = new Scanner(new File(gainDir+"/Gain_FADC.dat"));
+            input = new Scanner(new File(gainFile));
         } catch (Exception ex) {
-            System.out.println("Can not open file.");
-            System.exit(0);
+            System.out.println("Can not open gain calibration file " + gainFile);
+            System.exit(1);
         }
         int j=0;
         while(input.hasNextDouble()) {

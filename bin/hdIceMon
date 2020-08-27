@@ -1,0 +1,16 @@
+#!/bin/sh
+
+
+export MALLOC_ARENA_MAX=1
+
+export CLAS12DIR=$COATJAVA
+
+export INSTALL_DIR=`dirname $0`/..
+
+export HDICEDIR=$HOME/hdice
+
+echo +-------------------------------------------------------------------------
+echo "| HD-ICE  MONITORING GUI"
+echo +-------------------------------------------------------------------------
+
+java  -cp $INSTALL_DIR/lib/hdIceMon-*-jar-with-dependencies.jar org.clas.viewer.EventViewer
