@@ -69,6 +69,7 @@ public class HDICEmonitor extends DetectorMonitor {
             System.out.println("Can not open gain calibration file " + gainFile);
             System.exit(1);
         }
+        System.out.println("Loading hdice gains from " + gainFile);
         int j=0;
         while(input.hasNextDouble()) {
             double number = input.nextDouble();
